@@ -8,7 +8,7 @@ from prompts import new_prompt, instruction_str, context, kr_prompt, kr_instruct
 from note_engine import note_engine
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
 from llama_index.core.tools import QueryEngineTool, ToolMetadata
-from llama_index.readers.file import PDFReader
+
 from llama_index.llms.openai import OpenAI
 from llama_index.core.agent import ReActAgent
 
