@@ -61,29 +61,25 @@ def get_db() -> Chroma:
     return db
 
 def clear_db(db):
-    db.delete()
+    ids = db.get()['ids']
+    db.delete(ids)
     print('삭제가 완료되었습니다.')
 
-#%%
-docs = load_html()
-
-#%%
-chunks = get_chunks(docs)
-#%%
-set_db(chunks)
-
-#%%
-db = get_db()
-retriever = db.as_retriever(search_type="mmr")
-query="시간을 잘 사용하는 방법"
-res = retriever.get_relevant_documents(query)
-print(res)
-
-#%%
-# DB삭제
-ids = db.get()['ids']
-print(len(ids))
-# db.delete(ids)
-
-
-# %%
+def main():
+    docs = load_html()
+    chunks = get_chunks(docs)
+    set_db(chunks)
+    db = get_db()
+    
+    return db
+    
+    
+if __name__ == '__main__':
+    # main()
+    db = get_db()
+    retriever = db.as_retriever(search_type="mmr")
+    query="시간을 잘 사용하는 방법"
+    res = retriever.get_relevant_documents(query)
+    print(res)
+    
+    # clear_db(db)
