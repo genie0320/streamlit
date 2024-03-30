@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
 
 
 class PdfGenerator:
@@ -35,7 +36,6 @@ class PdfGenerator:
 
     def _get_pdf_from_url(self, url, *args, **kwargs):
         self.driver.get(url)
-
         time.sleep(0.3)  # allow the page to load, increase if needed
 
         print_options = self.print_options.copy()
@@ -72,9 +72,17 @@ class PdfGenerator:
         webdriver_options.add_argument("--headless")
         webdriver_options.add_argument("--disable-gpu")
 
+        # 특정한 프로필로 열어야 할 경우.
+        # webdriver_options.add_argument(
+        #     r"--user-data-dir=C:/Users/Genie240223/AppData/Local/Google/Chrome/User Data"
+        # )
+        # webdriver_options.add_argument(r"--profile-directory=Profile 3")
+        # webdriver_options.add_experimental_option("detach", True)
+
         try:
             self.driver = webdriver.Chrome(
-                service=ChromeService(ChromeDriverManager().install()),
+                # service=ChromeService(ChromeDriverManager().install()),
+                service=ChromeService(),
                 options=webdriver_options,
             )
             result = self._generate_pdfs()
@@ -84,7 +92,7 @@ class PdfGenerator:
         return result
 
 
-URL = "https://publy.co/set/1045?fr=category"
+URL = "https://watcha.com/"
 pdf_file = PdfGenerator([URL]).main()
 # save pdf to file
 with open("medium_site.pdf", "wb") as outfile:
