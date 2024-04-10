@@ -14,45 +14,43 @@ import os
 import pyautogui
 import webbrowser
 import myTube as tube
+import myGemini as genai
 
 st.title(":red[Youtube] downloader :sunglasses:")
-st.write(st.session_state)
 
 
-def clear_state():
-    for key in st.session_state.keys():
-        del st.session_state[key]
-    pyautogui.hotkey("ctrl", "f5")
+# def clear_state():
+#     for key in st.session_state.keys():
+#         del st.session_state[key]
+#     pyautogui.hotkey("ctrl", "f5")
 
 
-st.button("Clear", on_click=clear_state)
+# st.button("Clear", on_click=clear_state)
 
 
-@st.cache_data
+# @st.cache_data
 def get_ready(url):
-    with st.sidebar:
-        print(tube.get_source(url))
-    return tube.get_source(url)
+    st.session_state = tube.get_source(user_input)
+    st.header("init")
 
 
-"https://youtu.be/xPA0LFzUDiE?si=-dgYEVwBCuKUah-Q"
+# "https://youtu.be/xPA0LFzUDiE?si=-dgYEVwBCuKUah-Q"
 
 user_input = st.text_input("1. Set URL", placeholder="http://")
+
 
 if len(user_input) < 8:
     st.info("Set URL please.")
 
 else:
-    if "source" not in st.session_state or st.session_state.source["url"] != user_input:
-        st.session_state.source = get_ready(user_input)
-        st.write(st.session_state)
-        # st.write(get_ready(user_input))
+    # if "source" not in st.session_state :
+    if "source" not in st.session_state.keys() or st.session_state["url"] != user_input:
+        get_ready(user_input)
+        # st.write(tube.get_source(user_input))
 
-    _source = st.session_state.source
-    source = st.session_state.source["source"]
-    v_stream = _source["v_streams"]
-    a_stream = _source["a_streams"]
-    st.write(a_stream)
+    source = st.session_state["source"]
+    v_stream = st.session_state["v_streams"]
+    a_stream = st.session_state["a_streams"]
     # Details Fold
     with st.expander("다운로드 할 영상을 확인해주세요."):
         col1, col2 = st.columns([1, 2])
@@ -70,7 +68,7 @@ else:
         col2.markdown(infos)
 
     # Start tab ui
-    tab1, tab2, tab3 = st.tabs(["Downloader", "Summarizer", "Etc"])
+    tab1, tab2, tab3 = st.tabs(["Video Downloader", "Audio Downloader", "Summarizer"])
 
     # Downloader
     with tab1:
@@ -83,8 +81,8 @@ else:
         )
 
         if st.button("Download", type="primary"):
-            tag = tube.get_itag(v_option)
-            target = source.get_by_itag(tag)
+            tag, _ = tube.get_itag(v_option)
+            target = source.streams.get_by_itag(tag)
             user_download_folder = os.path.expanduser("~/Downloads")
             target.download(
                 filename=f"{source.title}.mp4", output_path=user_download_folder
@@ -102,16 +100,21 @@ else:
 
         if st.button("Download"):
             tag, extention = tube.get_itag(a_option)
-            target = source.get_by_itag(tag)
+            target = source.streams.get_by_itag(tag)
             user_download_folder = os.path.expanduser("~/Downloads")
-            
-            extention = 
+
             target.download(
-                filename=f"{source.title}.mp4", output_path=user_download_folder
+                filename=f"{source.title}.{extention}", output_path=user_download_folder
             )
             st.success("Download Complete", icon="✅")
             webbrowser.open("file://" + user_download_folder)
 
     with tab3:
-        st.header("An owl")
-        st.image("https://static.streamlit.io/examples/owl.jpg", width=200)
+        script = "스크립트를 가져와주세요."
+        if st.button("스크립트 가져오기"):
+            vid_id = tube.get_id(source)
+            script = tube.get_script(vid_id)
+            container = st.container(height=300, border=True)
+            container.write(script)
+            sum = genai.get_summary(script)
+            container.write(sum)

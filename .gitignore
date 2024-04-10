@@ -12,6 +12,7 @@ openai-env/
 *.txt
 data/
 chroma/
+*.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
